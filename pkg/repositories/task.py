@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy.orm import Session
 
 from db.postgres import engine
@@ -50,3 +51,47 @@ def create_task(task: Task):
         db.add(task_db)
         db.commit()
         return task_db.id
+
+
+def update_task(task: Task):
+    with Session(bind=engine) as db:
+        task_to_update = db.query(Task).filter(Task.deleted_at == None, Task.user_id == task.user_id,
+                                        Task.id == task.id).first()
+        if task_to_update is None:
+            return None
+        
+        task_to_update.title = task.title
+        task_to_update.description=task.description
+        task_to_update.deadline=task.deadline
+        task_to_update.priority=task.priority
+        task_to_update.user_id=task.user_id
+        db.commit()
+        
+        return task_to_update.id
+        
+
+def delete_task_by_id(user_id, task_id):
+    with Session(bind=engine) as db:
+        task_to_be_deleted = db.query(Task).filter(Task.deleted_at == None, Task.user_id == user_id,
+                                        Task.id == task_id).first()
+        if task_to_be_deleted is None:
+            return None
+        
+        task_to_be_deleted.deleted_at = datetime.datetime.now()
+        db.commit()
+
+        return task_to_be_deleted.id
+    
+
+def update_task_status_by_id(user_id, task_id, is_done):
+    with Session(bind=engine) as db:
+        task_to_be_ticked = db.query(Task).filter(Task.deleted_at == None, Task.user_id == user_id,
+                                        Task.id == task_id).first()
+        if task_to_be_ticked is None:
+            return None
+        
+        task_to_be_ticked.is_done = is_done
+        db.commit()
+
+        return  task_to_be_ticked.id
+
