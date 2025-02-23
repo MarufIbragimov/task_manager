@@ -29,7 +29,7 @@ class User(Base):
     username = Column(String, unique=True)
     password = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.now())
-
+    role = Column(String, default="user")
 
 def migrate_tables():
     try:
