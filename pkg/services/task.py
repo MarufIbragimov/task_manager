@@ -3,8 +3,8 @@ from pkg.repositories import task as task_repository
 from schemas.task import TaskSchema
 
 
-def get_all_tasks(user_id):
-    tasks = task_repository.get_all_tasks(user_id)
+def get_all_tasks(user_id, is_deleted=False):
+    tasks = task_repository.get_all_tasks(user_id, is_deleted)
     return tasks
 
 
